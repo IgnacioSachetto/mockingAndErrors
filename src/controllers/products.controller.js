@@ -1,29 +1,9 @@
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 import { productService } from '../services/products.service.js';
 import { generateProduct } from '../utils/productsMocks.js';
 
 class ProductControler {
-
-
-  async getProductsByMock(req, res) {
-    try {
-      const products = [];
-
-      for (let i = 0; i < 100; i++) {
-        products.push(generateProduct());
-      }
-      return res.status(200).json({
-        status: 'success',
-        msg: 'found all products',
-        data: products,
-      });
-    } catch (e) {
-      CustomError.createError({
-        name: 'Error Del Servidor',
-        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
-        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
-      });
-    }
-  }
   async getAll(req, res) {
     try {
       const limit = req.query.limit || 5;
@@ -47,18 +27,19 @@ class ProductControler {
           nextLink: result.nextlink,
         });
       } else {
-        return res.status(404).json({
-          status: 'Error',
-          msg: 'Products not found',
-          data: {},
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
         });
       }
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -73,18 +54,19 @@ class ProductControler {
           data: product,
         });
       } else {
-        return res.status(404).json({
-          status: 'Error',
-          msg: 'Cart with id ' + req.params.id + ' not found',
-          data: {},
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
         });
       }
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -93,25 +75,35 @@ class ProductControler {
     try {
       const { title, description, code, price, status = true, stock, category, thumbnails } = req.body;
       const ProductCreated = await productService.createProduct(title, description, code, price, status, stock, category, thumbnails);
-      if (ProductCreated.code===400) {
-        return res.status(400).json({
-          status: 'error',
-          msg: 'code used',
-          data: {},
+      if (ProductCreated.code === 400) {
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
         });
       } else {
-        return res.status(201).json({
-          status: 'success',
-          msg: 'product created',
-          data: ProductCreated,
-        });
+        if (ProductCreated !== null) {
+          return res.status(201).json({
+            status: 'success',
+            msg: 'product created',
+            data: ProductCreated,
+          });
+        } else {
+          CustomError.createError({
+            name: 'Error Creacion',
+            cause: 'Parametros Faltantes o incorrectos.',
+            message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+            code: EErrors.INVALID_INPUT_ERROR,
+          });
+        }
       }
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -123,15 +115,15 @@ class ProductControler {
       const productUptaded = await productService.updateProduct(id, title, description, code, price, status, stock, category, thumbnails);
       return res.status(201).json({
         status: 'success',
-        msg: 'user uptaded',
+        msg: 'product updated',
         data: productUptaded,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -146,15 +138,36 @@ class ProductControler {
         data: deleted,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
 
+  async getProductsByMock(req, res) {
+    try {
+      const products = [];
+
+      for (let i = 0; i < 100; i++) {
+        products.push(generateProduct());
+      }
+      return res.status(200).json({
+        status: 'success',
+        msg: 'found all products',
+        data: products,
+      });
+    } catch (e) {
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
+      });
+    }
+  }
 }
 
 export const productControler = new ProductControler();

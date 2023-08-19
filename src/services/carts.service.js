@@ -3,18 +3,27 @@ import { modelCart } from '../DAO/models/db/carts.model.db.js';
 import { modelProduct } from '../DAO/models/db/products.model.db.js';
 import { ticketsModel } from '../DAO/models/mongoose/tickets.model.js';
 import { sendPurchaseConfirmationEmail } from '../controllers/mail.controller.js';
-
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 class CartService {
   validateId(id) {
     if (!id) {
-      console.log('validation error: please complete id.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
   validateProduct(pid) {
     if (!pid) {
-      console.log('validation error: please complete product id.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
@@ -23,9 +32,14 @@ class CartService {
     this.validateProduct(pid);
     const cart = await this.getCart(cid);
     if (!cart.products.find((p) => p.id._id.toString() === pid)) {
-      console.log('Validation error: Product ID is not valid');
-      throw 'VALIDATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
+    return true;
   }
 
   async getAllCarts() {

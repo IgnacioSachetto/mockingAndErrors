@@ -1,24 +1,39 @@
 import { modelUsuario } from '../DAO/models/db/users.model.db.js';
 //import { modelUsuario } from '../DAO/models/mem/users.model.mem.js';
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
+
 class UserService {
   validatePostUser(firstName, lastName, email) {
     if (!firstName || !lastName || !email) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
   validatePutUser(id, firstName, lastName, email) {
     if ((!id, !firstName || !lastName || !email)) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
   validateId(id) {
     if (!id) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
   async getAllUsers() {

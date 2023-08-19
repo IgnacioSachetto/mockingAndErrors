@@ -1,25 +1,38 @@
 //import { modelProduct } from '../DAO/models/mem/products.model.mem.js';
 import { modelProduct } from '../DAO/models/db/products.model.db.js';
-
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 class ProductService {
   validatePostProduct(title, description, code, price, status, stock, category, thumbnails) {
     if (!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
   validatePutProduct(id, title, description, code, price, status, stock, category, thumbnails) {
     if (!id || !title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
   validateId(id) {
     if (!id) {
-      console.log('validation error: please complete firstName, lastname and email.');
-      throw 'VALDIATION ERROR';
+      CustomError.createError({
+        name: 'VALDIATION ERROR',
+        cause: 'Parametros Faltantes o incorrectos.',
+        message: 'os parámetros proporcionados son insuficientes o inválidos para llevar a cabo la creación. Por favor, revisa la información suministrada e intenta nuevamente.',
+        code: EErrors.INVALID_INPUT_ERROR,
+      });
     }
   }
 
@@ -53,6 +66,7 @@ class ProductService {
 
   async createProduct(title, description, code, price, status, stock, category, thumbnails) {
     const products = await modelProduct.getAllProducts();
+    const productcreated = null;
     let existcode = products.docs.find((p) => p.code === code);
     if (existcode) {
       return (productcreated = {
@@ -62,7 +76,7 @@ class ProductService {
       });
     } else {
       this.validatePostProduct(title, description, code, price, status, stock, category, thumbnails);
-      const productcreated = await modelProduct.createProduct(title, description, code, price, status, stock, category, thumbnails);
+      productcreated = await modelProduct.createProduct(title, description, code, price, status, stock, category, thumbnails);
       return productcreated;
     }
   }

@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 import { MessageModel } from '../DAO/models/db/msgs.model.db.js';
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 
 export function connectSocket(httpServer) {
   const socketServer = new Server(httpServer);
@@ -20,8 +22,12 @@ export function connectSocket(httpServer) {
         let allProducts = await productApiService.getProducts();
         socketServer.emit("all-the-products", allProducts);
       } catch (error) {
-        console.log(error);
-      }
+        CustomError.createError({
+          name: 'Error De Conexion por Socket',
+          cause: 'No se pudo establecer una conexión con Socket',
+          message: 'Ocurrió un error al intentar conectarse con Socket.',
+          code: EErrors.SOCKET_CONNECTION_ERROR,
+        });      }
     });
 
     socket.on("delete-product", async (iidd) => {
@@ -32,8 +38,12 @@ export function connectSocket(httpServer) {
         console.log("socket server del back", allProducts)
         socketServer.emit("all-the-products", allProducts);
       } catch (error) {
-        console.log(error);
-      }
+        CustomError.createError({
+          name: 'Error De Conexion por Socket',
+          cause: 'No se pudo establecer una conexión con Socket',
+          message: 'Ocurrió un error al intentar conectarse con Socket.',
+          code: EErrors.SOCKET_CONNECTION_ERROR,
+        });       }
     });
   });
 }

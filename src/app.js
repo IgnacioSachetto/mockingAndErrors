@@ -7,6 +7,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { iniPassport } from './config/passport.config.js';
 import { __dirname } from './dirname.js';
+import errorHandler from './middlewares/error.js';
 import { routerCarts } from './routes/cart.router.js';
 import { routerVistaCart } from './routes/cart.vista.router.js';
 import { routerViewChat } from './routes/chatRealTime.router.js';
@@ -19,6 +20,7 @@ import { routerUsers } from './routes/users.router.js';
 import { viewsRouter } from './routes/views.router.js';
 import { connectMongo } from './utils/connections.js';
 import { connectSocket } from './utils/socket-server.js';
+
 
 dotenv.config();
 console.log();
@@ -82,13 +84,11 @@ app.get('*', (req, res) => {
   });
 });
 
-
-
-
-
 const httpServer = app.listen(port, () => {
   console.log('Servidor escuchando en el puerto ' + process.env.PORT);
 });
 connectSocket(httpServer);
+
+app.use(errorHandler)
 
 

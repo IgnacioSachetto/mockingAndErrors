@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
-
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 dotenv.config();
 
 export const mailController = nodemailer.createTransport({
@@ -34,8 +35,12 @@ export async function sendPurchaseConfirmationEmail(ticket) {
 
     console.log(result);
     console.log("Email sent successfully");
-  } catch (error) {
-    console.error("Error sending email:", error);
-    console.log("Error sending email");
+  } catch (e) {
+    CustomError.createError({
+      name: 'Error Envio Mail',
+      cause: 'Ocurrió un error inesperado enviando su notificación',
+      message: 'Error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+      code: EErrors.MAIL_SEND_ERROR,
+    });
   }
 }

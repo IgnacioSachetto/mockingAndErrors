@@ -1,39 +1,62 @@
+import CustomError from '../services/errors/custom-error.js';
+import EErrors from '../services/errors/enums.js';
 import { userService } from '../services/users.service.js';
+
 class UserController {
   async getAll(req, res) {
     try {
       const users = await userService.getAllUsers();
-      return res.status(200).json({
-        status: 'success',
-        msg: 'listado de usuarios',
-        data: users,
-      });
+      if (users.length !== 0) {
+        return res.status(200).json({
+          status: 'success',
+          msg: 'listado de usuarios',
+          data: users,
+        });
+      } else {
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
+        });
+      }
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
 
   async getOne(req, res) {
-    const { id } = req.params;
-    const user = await userService.getOneUser(id);
-    return res.status(200).json({
-        status: 'success',
-        msg: 'usuario encontrado',
-        data: user,
-      });
+    try {
+      const { id } = req.params;
+      const user = await userService.getOneUser(id);
+      if (user) {
+        return res.status(200).json({
+          status: 'success',
+          msg: 'usuario encontrado',
+          data: user,
+        });
+      } else {
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
+        });
+      }
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
+  }
 
   async create(req, res) {
     try {
@@ -45,11 +68,11 @@ class UserController {
         data: userCreated,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -65,11 +88,11 @@ class UserController {
         data: userUptaded,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
@@ -84,11 +107,11 @@ class UserController {
         data: deleted,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        status: 'error',
-        msg: 'something went wrong :(',
-        data: {},
+      CustomError.createError({
+        name: 'Error Del Servidor',
+        cause: 'Ocurrió un error inesperado en el servidor. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
