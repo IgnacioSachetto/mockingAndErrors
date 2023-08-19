@@ -239,18 +239,27 @@ class CartController {
     try {
       const cid = req.params.cid;
       const email = req.user.email;
-      const idUser = req.user.id;
-
-
-      const purchaseResult = await cartService.purchaseCart(cid, email, idUser);
-
-
+      const ticket = await cartService.purchaseCart(cid, email);
+      if (ticket !== null) {
+        return res.status(200).json({
+          status: 'success',
+          msg: 'compra realizada',
+          data: ticket,
+        });
+      } else {
+        CustomError.createError({
+          name: 'Error Entrada Invalida',
+          cause: 'Parametros Faltantes o incorrectos.',
+          message: 'Algunos de los parámetros requeridos están ausentes o son incorrectos para completar la petición.',
+          code: EErrors.INVALID_INPUT_ERROR,
+        });
+      }
     } catch (e) {
       CustomError.createError({
-        name: 'Error Envio Mail',
-        cause: 'Ocurrió un error inesperado enviando su notificación',
-        message: 'Error inesperado en el servidor. Por favor, contacta al equipo de soporte.',
-        code: EErrors.MAIL_SEND_ERROR,
+        name: 'Error al enviar Ticket',
+        cause: 'Ocurrió un error inesperado en el envio del ticket. La operación no pudo completarse.',
+        message: 'Lo sentimos, ha ocurrido un error inesperado en el envio de ticket. Por favor, contacta al equipo de soporte.',
+        code: EErrors.ERROR_INTERNO_SERVIDOR,
       });
     }
   }
